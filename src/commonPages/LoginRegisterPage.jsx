@@ -1,10 +1,28 @@
 import React, { useState } from 'react'
 import { Mail, Moon, Sun, Lock, Eye, EyeClosed } from 'lucide-react'
 import Terminal, { SCENES } from '../Terminal'
+import { AnimatePresence, motion } from 'motion/react'
+import LiveSelfie from '../commonUi/LiveSelfie'
+import FaceScan from '../commonUi/FaceScan'
+
+const EASE = [0.22, 1, 0.36, 1]
+const DURATION = 0.4
+
+const RegisterPage = () => {
+  return (
+    <>
+      hello register
+    </>
+  )
+}
+
 const LoginRegisterPage = () => {
   const [theme, setTheme] = useState(false)
   const [showPassowrd, setShowPassowrd] = useState(false)
   const Icon = theme ? Moon : Sun
+
+  // animation for form swtiching 
+  const [isRegister, setIsRegister] = useState(false)
 
   // icons 
   const GithubIcon = () => (
@@ -24,68 +42,218 @@ const LoginRegisterPage = () => {
   // styles
   const styleBtn = 'w-1/2 text-center flex items-center justify-center gap-2 py-2 px-8 box-border shrink-0 border border-gray-800 cursor-pointer hover:border-blue-600 transition-all rounded-lg'
 
-  const inputBox=`flex border border-[#292929] items-center ${theme?'bg-white':' bg-[#212121]'} p-2 box-border shrink-0 rounded-lg`
+  const inputBox = `flex border border-[#292929] items-center ${theme ? 'bg-white' : ' bg-[#212121]'} p-2 box-border shrink-0 rounded-lg`
+
   return (
-    <div className={`w-full h-svh overflow-hidden ${theme ? 'text-black bg-white' : "bg-black text-white"} transition-all`}>
+    <div className={`w-full h-svh ${isRegister ? 'overflow-auto' : 'overflow-hidden'} ${theme ? 'text-black bg-white' : "bg-black text-white"} transition-all`}>
       <div className='w-full h-[50px] p-4 box-border flex items-center justify-between'>
         <img alt='logo' src={theme ? 'Logo.png' : '/Logo_white_text.png'} width={150} />
         <Icon size={20} className='transition-all cursor-pointer' onClick={() => setTheme((prev => !prev))} />
       </div>
-      <div className='w-full h-full flex justify-between items-start'>
-        <div className='w-[40%] mx-auto  h-full flex flex-col items-center justify-start py-10'>
+
+      {/* relative is required for popLayout */}
+      <div className='relative w-full h-full flex justify-between items-start'>
+
+        {/* LEFT: outside AnimatePresence so it only reacts to the layout shift */}
+        <motion.div
+          layout="position"
+          layoutDependency={isRegister}
+          initial={{ x: 300, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{
+            duration: DURATION,
+            ease: EASE,
+            layout: { duration: DURATION, ease: EASE },
+          }}
+          className={`${isRegister ? 'w-[60%]' : 'w-[40%]'} mx-auto h-full flex flex-col items-center justify-start py-10`}
+        >
           <div className='w-full text-start'>
-            <h1 className='text-5xl trocchi-regular'>Welcome Back!</h1>
-            <p className='text-md my-3 open-sans text-gray-400'>Sign in to review assessments and candidate sessions.</p>
-            <div className="wp-in mt-15 flex gap-3">
-              <button type="button" className={styleBtn}>
-                <GoogleIcon /> Google
-              </button>
-              <button type="button" className={styleBtn}>
-                <GithubIcon /> GitHub
-              </button>
-            </div>
-            <div className="wp-in my-8 flex items-center justify-start gap-4 text-[13px] text-[#6B6580]" >
-              <span className="h-px flex-1 bg-gray-800" />
-              or continue with email
-              <span className="h-px flex-1 bg-gray-800" />
-            </div>
-            <form className='w-[65%] mx-auto px-4 box-border'>
-              <div className='w-full leading-8 my-4'>
-                <label className='font-semibold text-[12px]'>Email</label>
-                <div className={`${inputBox} justify-start`}>
-                  <Mail size={18} className='text-gray-400' />
-                  <input className='outline-0 pl-2 shrink-0 box-border' placeholder='user@xyz.com' autoComplete='email' />
-                </div>
-              </div>
-              <div className='w-full leading-8'>
-                <label className='font-semibold text-[12px]'>Password</label>
-                <div className={`${inputBox} flex border items-center justify-between p-2 box-border shrink-0 rounded-lg`}>
-                  <div className='flex items-center'>
-                    <Lock size={18} className='text-gray-400' />
-                    <input type={showPassowrd ? 'text' : 'password'} className='outline-0 pl-2 shrink-0 box-border' placeholder='*******' />
+            <h1 className='text-5xl trocchi-regular'>{isRegister ? "Ready to Make Your Mark?" : "Welcome Back!"}</h1>
+            <p className='text-md my-3 open-sans text-gray-400'>{isRegister ? "Create your WorkProof account and start showcasing your technical skills." : "Sign in to review assessments and candidate sessions."}</p>
+            {
+              !isRegister && (
+                <>
+                  <div className="wp-in mt-15 flex gap-3">
+                    <button type="button" className={styleBtn}>
+                      <GoogleIcon /> Google
+                    </button>
+                    <button type="button" className={styleBtn}>
+                      <GithubIcon /> GitHub
+                    </button>
                   </div>
-                  <button className='w-fit text-gray-600 cursor-pointer' type='button' aria-label='password' onClick={() => setShowPassowrd((prev) => !prev)}>
-                    {showPassowrd ? <Eye size={18} /> : <EyeClosed size={18} />}
-                  </button>
+                  <div className="wp-in my-8 flex items-center justify-start gap-4 text-[13px] text-[#6B6580]" >
+                    <span className="h-px flex-1 bg-gray-800" />
+                    or continue with email
+                    <span className="h-px flex-1 bg-gray-800" />
+                  </div>
+                  <form className='w-[65%] mx-auto px-4 box-border'>
+                    <div className='w-full leading-8 my-4'>
+                      <label className='font-semibold text-[12px]'>Email</label>
+                      <div className={`${inputBox} justify-start`}>
+                        <Mail size={18} className='text-gray-400' />
+                        <input className='outline-0 pl-2 shrink-0 box-border' placeholder='user@xyz.com' autoComplete='email' />
+                      </div>
+                    </div>
+                    <div className='w-full leading-8'>
+                      <label className='font-semibold text-[12px]'>Password</label>
+                      <div className={`${inputBox} flex border items-center justify-between p-2 box-border shrink-0 rounded-lg`}>
+                        <div className='flex items-center'>
+                          <Lock size={18} className='text-gray-400' />
+                          <input type={showPassowrd ? 'text' : 'password'} className='outline-0 pl-2 shrink-0 box-border' placeholder='*******' />
+                        </div>
+                        <button className='w-fit text-gray-600 cursor-pointer' type='button' aria-label='password' onClick={() => setShowPassowrd((prev) => !prev)}>
+                          {showPassowrd ? <Eye size={18} /> : <EyeClosed size={18} />}
+                        </button>
+                      </div>
+                    </div>
+                    <div className='w-full text-end'>
+                      <p className='text-blue-600 font-semibold cursor-pointer text-sm my-2'>Forgot Password?</p>
+                    </div>
+                    <button type='button' className='w-full  mt-10 shrink-0 p-3 cursor-pointer box-border font-semibold rounded-lg text-white bg-blue-600 transition-all'>Sign In</button>
+                  </form>
+                </>
+              )
+            }
+
+            {/* register form */}
+            {
+              isRegister && (
+                <div className="w-full h-full">
+                  <form className="w-full grid grid-cols-2 gap-4">
+                    {/* First Name */}
+                    <div className="min-w-0 leading-8">
+                      <label className="font-semibold text-[12px]">
+                        First Name
+                      </label>
+
+                      <div className={`${inputBox} w-full min-w-0 focus-within:border-blue-500
+  focus-within:ring-2 focus-within:ring-blue-500/20`}>
+                        <input
+                          type="text"
+                          className="outline-0 pl-2 w-full min-w-0 bg-transparent"
+                          placeholder="Enter first name"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Last Name */}
+                    <div className="min-w-0 leading-8">
+                      <label className="font-semibold text-[12px]">
+                        Last Name
+                      </label>
+
+                      <div className={`${inputBox} w-full min-w-0 focus-within:border-blue-500
+  focus-within:ring-2 focus-within:ring-blue-500/20`}>
+                        <input
+                          type="text"
+                          className="outline-0 pl-2 w-full min-w-0 bg-transparent"
+                          placeholder="Enter last name"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Mobile Number */}
+                    <div className="min-w-0 leading-8">
+                      <label className="font-semibold text-[12px]">
+                        Mobile No.
+                      </label>
+
+                      <div className={`${inputBox} w-full min-w-0 focus-within:border-blue-500
+  focus-within:ring-2 focus-within:ring-blue-500/20`}>
+                        <input
+                          type="text"
+                          className="outline-0 pl-2 w-full min-w-0 bg-transparent"
+                          placeholder="+91 96XXX XXXXX"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Email */}
+                    <div className="min-w-0 leading-8">
+                      <label className="font-semibold text-[12px]">
+                        Email
+                      </label>
+
+                      <div className={`${inputBox} w-full min-w-0 focus-within:border-blue-500
+  focus-within:ring-2 focus-within:ring-blue-500/20`}>
+                        <Mail size={18} className="text-gray-400 shrink-0" />
+                        <input
+                          type="email"
+                          className="outline-0 pl-2 w-full min-w-0 bg-transparent"
+                          placeholder="user@xyz.com"
+                          autoComplete="email"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Password */}
+                    <div className="min-w-0 leading-8">
+                      <label className="font-semibold text-[12px]">
+                        Password
+                      </label>
+
+                      <div className={`${inputBox} w-full min-w-0 focus-within:border-blue-500
+  focus-within:ring-2 focus-within:ring-blue-500/20`}>
+                        <Lock size={18} className="text-gray-400 shrink-0" />
+                        <input
+                          type="password"
+                          className="outline-0 pl-2 w-full min-w-0 bg-transparent"
+                          placeholder="Enter password"
+                          autoComplete="new-password"
+                        />
+                      </div>
+                    </div>
+
+                    {/* avatar */}
+                    <div className="min-w-0 leading-8">
+                      <label className="font-semibold text-[12px]">
+                        Avatar
+                      </label>
+
+                      <div className={`${inputBox} w-full min-w-0 focus-within:border-blue-500
+  focus-within:ring-2 focus-within:ring-blue-500/20`}>
+                        <input
+                          type="file"
+                          className="outline-0 pl-2 w-full min-w-0 bg-transparent"
+                          placeholder="Enter Profile Photo"
+                          accept='.jpeg, .jpg, .png, .webp'
+                        />
+                      </div>
+                    </div>
+
+                    {/* Scanning the face */}
+                    <FaceScan />
+
+                  </form>
                 </div>
-              </div>
-              <div className='w-full text-end'>
-                <p className='text-blue-600 font-semibold cursor-pointer text-sm my-2'>Forgot Password?</p>
-              </div>
-              <button type='button' className='w-full  mt-10 shrink-0 p-3 cursor-pointer box-border font-semibold rounded-lg text-white bg-blue-600 transition-all'>Sign In</button>
-            </form>
-            <p className='text-center my-2 text-xs'>New to WorkProof ? <span className='text-blue-600 font-semibold cursor-pointer'>Create an account</span> </p>
+              )
+            }
+
+            <p className='text-center my-2 text-xs'>{isRegister ? "Already Have an Account ?" : "New to WorkProof ?"} <span className='text-blue-600 font-semibold cursor-pointer' onClick={() => setIsRegister((prev) => !prev)}> {isRegister ? "Login" : "Create an account"}</span> </p>
           </div>
-        </div>
-        <div className='w-[55%] border-l border-l-gray-800 h-[calc(100%-50px)] flex items-center justify-end'>
-          <div className='w-[95%] px-5 h-full flex flex-col gap-6 items-center justify-center rounded-tl-2xl rounded-bl-2xl'>
-            <div className='w-full text-start pl-25'>
-              <h2 className='text-[clamp(40px,4.5vw,60px)] font-semibold trocchi-regular'>Show The Work We'll <br /> Verify It</h2>
-              <p className='text-gray-400 my-3'>Candidates solve real problems in a sandbox with a full IDE and terminal. WorkProof reads how they got there, not what their resume says.</p>
-            </div>
-            <Terminal cfg={SCENES.signin} active />
-          </div>
-        </div>
+        </motion.div>
+
+        {/* RIGHT: its own AnimatePresence with popLayout so it leaves the flow instantly */}
+        <AnimatePresence mode="popLayout">
+          {!isRegister && (
+            <motion.div
+              key="signin-right"
+              initial={{ x: 250, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: 250, opacity: 0 }}
+              transition={{ duration: DURATION, ease: EASE }}
+              className='w-[55%] border-l border-l-gray-800 h-[calc(100%-50px)] flex items-center justify-end'
+            >
+              <div className='w-[95%] px-5 h-full flex flex-col gap-6 items-center justify-center rounded-tl-2xl rounded-bl-2xl'>
+                <div className='w-full text-start pl-25'>
+                  <h2 className='text-[clamp(40px,4.5vw,60px)] font-semibold trocchi-regular'>Show The Work We'll <br /> Verify It</h2>
+                  <p className='text-gray-400 my-3'>Candidates solve real problems in a sandbox with a full IDE and terminal. WorkProof reads how they got there, not what their resume says.</p>
+                </div>
+                <Terminal cfg={SCENES.signin} active />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   )

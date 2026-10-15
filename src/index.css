@@ -37,3 +37,14 @@
   /* font-weight: <weight>; */
   font-style: normal;
 }
+
+/* autofill options  */
+/* Dark theme autofill */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: white;
+  -webkit-box-shadow: 0 0 0 1000px #212121 inset;
+  transition: background-color 9999s ease-in-out 0s;
+  caret-color: white;
+}
